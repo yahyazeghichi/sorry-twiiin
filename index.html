@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سوري عصفورة</title>
+    <!-- استيراد خطوط عربية جميلة من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;  /* أزرق داكن جداً */
+            --bg-crimson: #450a0a; /* قرمزي غامق جداً */
+            --text-light: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: radial-gradient(circle at center, var(--bg-dark) 0%, #1a0505 100%);
+            color: var(--text-light);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* حاوية الإيموجيات المتساقطة */
+        #falling-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .falling-emoji {
+            position: absolute;
+            top: -50px;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        /* الصفحة 1: الشاشة الافتتاحية */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, var(--bg-dark) 40%, var(--bg-crimson) 100%);
+            z-index: 100;
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+            cursor: pointer;
+        }
+
+        #intro-text {
+            font-family: 'Amiri', serif;
+            font-size: 4rem;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite ease-in-out;
+            text-align: center;
+        }
+
+        #sub-text {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        /* الصفحة 2: الرسالة */
+        #message-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: none; /* مخفي في البداية */
+            opacity: 0;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: opacity 1s ease;
+        }
+
+        .message-box {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: justify;
+            line-height: 1.8;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            scrollbar-width: thin;
+            scrollbar-color: var(--bg-crimson) transparent;
+        }
+
+        .message-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .message-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .message-box::-webkit-scrollbar-thumb {
+            background-color: var(--bg-crimson);
+            border-radius: 20px;
+        }
+
+        .message-content p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            color: #fca5a5;
+            font-weight: bold;
+        }
+
+        .sub-note {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            display: block;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            text-align: center;
+            font-family: 'Amiri', serif;
+            font-size: 1.4rem;
+            color: #fff;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+
+        .english-note {
+            font-family: sans-serif;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Animation Keyframes */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* تحسينات للجوال */
+        @media (max-width: 600px) {
+            #intro-text { font-size: 2.5rem; }
+            .message-box { padding: 25px; }
+            .message-content p { font-size: 1rem; }
+            .footer-note { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- حاوية الخلفية المتحركة -->
+    <div id="falling-container"></div>
+
+    <!-- الشاشة الافتتاحية -->
+    <main id="intro-screen">
+        <h1 id="intro-text">-hiiiii Zahra-</h1>
+        <span id="sub-text">- press anywhere -</span>
+    </main>
+
+    <!-- الرسالة -->
+    <section id="message-container">
+        <div class="message-box">
+            <div class="message-content">
+                <p>هلووووو جبتلك اليوم خبر ما رح يعجبك 🗿🥀</p>
+                
+                <p>بقا 15 يوم على باك بلون ، و كيما قتلك انا حرفيًا ماني قاري والو ، بسبت اني مبديتش بكري ، و ضك راح نتحمل مسؤولية قراري ، و في ضرف 15 يوم لازم نحاول نكمل مقرر العام كامل ، سووو راني ريقلت برنامج نقرا صباح و عشية ، و التلفون راح نمدو لأمي منزيدش نستعملو ، و ما رح اكون جنبك باه تفرغي قلبك و راح اخليك تنفجري للاسف 😔🙏🏿</p>
+                
+                <p>المهم ترااااا بختفي تويييين ، اختفاااء طوييييييييل جدًااا ، نحاول نجيبها قراية منا حتا الباك ، يعني ما اكتفيت باخر لقاء في الواقع لاااا ، بل راح ازيدك اخر لقاء في المواقع 🗿🥀</p>
+                
+                <span class="sub-note">( مدة شهر و نص و برجع )</span>
+                
+                <p>الله يعينك و ينجحك في اختباراتك ، و الله يثبتك في عبادتك و يبعد عنك صديقات السوء و يرزقك بإلي تستاهلك ، و يشفيك من كل مرض يارب 💫🤍</p>
+                
+                <span class="sub-note">( احسها رسالة غياب 10 سنين يااااخي 😭😭😭 )</span>
+                
+                <p>( بس مقدر اسحب عليك سحبة بسيطة ، لانو كل أصدقائي بدون إستثناء ، بكون جاد معاهم في العلاقة ، و مستحيل اخرب علاقتي معاهم ، إلا لو بادرو هم في ذلك ( بصيغة أخرى "ربحولي العيب" ) أو تكون ضروف الحياة هي إلي فرقتنا ، و فوق هاض ، إلي أعتبرهم أصدقائي يُعَّدو على الأصابع و أنتِ واحدة منهم ، يمكن تستغربي لأنو صداقتنا إلها أسبوعين حرفياً ، بس صدقيني أنا أصلا ما أكَّون صداقات جديدة ، بس لو حاولت مع شخص ، خلاص بيصير صديقي و ما رح أقصِّر معاه )</p>
+                
+                <p>أنا جد سيء في كتباة الرسائل ، و في كثير كلام بدي اقولو ، بس ما أعرف أعبر عنو ، بس هاض الي قدرت عليه 🗿🙏🏿</p>
+                
+                <span class="sub-note">( لا تنسي تعطي بعبوعة سلامي 😡🥀 )</span>
+                
+                <div class="footer-note">
+                    مدري إيش أكتب آخر كلمة " كلمة وداع " يمكن ذي تنفع :
+                    <br>سلام عليكم 🫡
+                    <span class="english-note">Take care of yourself 3sfora 🥀✨</span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; opacity: 0.5;">
+                    ( احسها جد تسليكية )
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // إعدادات الإيموجيات (تمت إزالة العصفور)
+        const emojis = ['🦢', '🌹'];
+        const container = document.getElementById('falling-container');
+        const introScreen = document.getElementById('intro-screen');
+        const messageContainer = document.getElementById('message-container');
+        let animationInterval;
+        let isTransitioned = false;
+
+        // دالة لإنشاء إيموجي متساقط
+        function createEmoji() {
+            const emoji = document.createElement('div');
+            emoji.classList.add('falling-emoji');
+            emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            // موقع أفقي عشوائي
+            const leftPos = Math.random() * 100;
+            emoji.style.left = `${leftPos}%`;
+            
+            // حجم عشوائي
+            const size = Math.random() * (30 - 15) + 15; 
+            emoji.style.fontSize = `${size}px`;
+            
+            // مدة سقوط عشوائية
+            const duration = Math.random() * (10 - 5) + 5;
+            emoji.style.animationDuration = `${duration}s`;
+            
+            // تأخير عشوائي للحركة
+            emoji.style.animationDelay = `${Math.random() * 2}s`;
+
+            container.appendChild(emoji);
+
+            // حذف العنصر بعد انتهاء الحركة
+            setTimeout(() => {
+                emoji.remove();
+            }, duration * 1000 + 2000);
+        }
+
+        // بدء رمي الإيموجيات
+        function startRain() {
+            animationInterval = setInterval(createEmoji, 300);
+        }
+
+        // تشغيل المطر فور فتح الصفحة
+        startRain();
+
+        // تفاعل النقر
+        function triggerTransition() {
+            if (isTransitioned) return;
+            isTransitioned = true;
+
+            // إخفاء الشاشة الافتتاحية
+            introScreen.style.opacity = '0';
+            introScreen.style.transform = 'scale(1.1)';
+            introScreen.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+                
+                // إظهار حاوية الرسالة
+                messageContainer.style.display = 'flex';
+                setTimeout(() => {
+                    messageContainer.style.opacity = '1';
+                }, 50);
+
+            }, 800);
+        }
+
+        // مستمعي الأحداث
+        document.addEventListener('click', triggerTransition);
+        document.addEventListener('touchstart', (e) => {
+            e.preventDefault(); 
+            triggerTransition();
+        }, { passive: false });
+
+    </script>
+</body>
+</html>
